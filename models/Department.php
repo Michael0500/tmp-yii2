@@ -43,7 +43,7 @@ class Department extends \yii\db\ActiveRecord
         ];
     }
 
-    public static function convert($array, $i = 'dept_id', $p = 'dept_id_parent')
+    public static function convert($array, $i = 'dept_id', $p = 'dept_id_parent', $root_id = 0)
     {
         if (!is_array($array)) {
             return array();
@@ -51,6 +51,10 @@ class Department extends \yii\db\ActiveRecord
             $ids = array();
             foreach ($array as $k => $v) {
                 if (is_array($v)) {
+                    if (isset($v[$i]) && ($v[$i] == $root_id)) { // пропускаем родительский самый главный елемент
+                        continue;
+                    }
+
                     if ((isset($v[$i]) || ($i === false)) && isset($v[$p])) {
                         $key = ($i === false) ? $k : $v[$i];
                         $parent = $v[$p];
@@ -59,7 +63,7 @@ class Department extends \yii\db\ActiveRecord
                 }
             }
 
-            return (isset($ids[0])) ? self::convert_node($ids, 0, 'children') : false;
+            return (isset($ids[$root_id])) ? self::convert_node($ids, $root_id, 'children') : false;
         }
     }
 
