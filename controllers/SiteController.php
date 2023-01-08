@@ -2,6 +2,7 @@
 
 namespace app\controllers;
 
+use app\models\Department;
 use Yii;
 use yii\filters\AccessControl;
 use yii\web\Controller;
@@ -61,7 +62,11 @@ class SiteController extends Controller
      */
     public function actionIndex()
     {
-        return $this->render('index');
+        $department = Department::find()->createCommand()->queryAll(\PDO::FETCH_ASSOC);
+        $department = Department::convert($department);
+
+        $model = $department;
+        return $this->render('index', ['model' => $model]);
     }
 
     /**
